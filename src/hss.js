@@ -110,15 +110,37 @@ shell = text => {
 	args = text.split(' ')
 	if(args[0] === 'vertex') {
 		vertices[args[1]] = parseInt(args[2]) ?? 0
-	}
-	else if(args[0] === 'link') {
+	} else if(args[0] === 'link') {
 		if(args.length == 2 + gates[args[1]][1] + gates[args[1]][2]) {
 			link(args[1], args.slice(2, 2 + gates[args[1]][1]), args.slice(2 + gates[args[1]][1]))
 		}
-	}
-	else if(args[0] === 'update') {
+	} else if(args[0] === 'update') {
 		update(args[1], args[2])
+	} else if(args[0] === 'eval') {
+		args = args.slice(1)
+		args.forEach(arg => {
+			console.log('[' + arg + '] ' + vertices[arg])
+		})
+	} else if(args[0] === 'log') {
+		log()
+	} else if(args[0] == 'assign') {
+		argstr = args.slice(2).join(' ')
+		inouts = argstr.split(',')
+		ins = inouts[0].split(' ')
+		outs = inouts[1].split(' ')
+		console.log(ins)
+		console.log(outs)
+		Gates[args[1]] = new Element(inputs.length, outputs.length, (inputs) => {
+
+		})
 	}
+	
+/* Gates = {
+	nand: new Element(2, 1, (inputs) => {
+		if(inputs[0] && inputs[1]) { return 0; }
+		return 1;
+	}),
+} */
 }
 
 log = () => {
@@ -128,5 +150,4 @@ log = () => {
 
 module.exports = {
 	shell,
-	log,
 }
