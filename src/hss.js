@@ -40,6 +40,8 @@ gates = {
 
 links = { }
 
+vertices_availabilities = { }
+
 check_vertex = (vertex) => {
 	if(!vertices.hasOwnProperty(vertex)) {
 		console.log('ERROR - vertex does not exist')
@@ -108,6 +110,13 @@ update = (vertex, value=-1) => {
 	}
 }
 
+log = () => {
+	console.log(vertices)
+	console.log(links)
+	console.log(gates)
+	console.log(vertices_availabilities)
+}
+
 trim_list = (list) => {
 	let lst = []
 	for (let i = 0; i < list.length; i++) {
@@ -116,21 +125,36 @@ trim_list = (list) => {
 	return lst
 }
 
-print_links = (element) => {
-	plinks = []
-	if(links[element]) {
-		links[element].forEach(link => {
-			plinks.push([element, link])
-			plinks = plinks.concat(print_links(link))
-		})
+_in = (element, list) => {
+	for(el of list) {
+		if(JSON.stringify(el) === JSON.stringify(element)) { return true }
 	}
-	return plinks
+	return false
+}
+
+vertex_in_gate = (vertex, gate) => {
+	if(!gate.ins || !gate.outs) { return false }
+	return _in(vertex, gate.ins) || _in(vertex, gate.outs)
+}
+
+get_vertices_availabilities = () => {
+	availabilities = {};
+	Object.keys(vertices).forEach(vertex => {
+		buffer = true
+		Object.keys(gates).forEach(gate => {
+			if(vertex_in_gate(vertex, gates[gate][0])) { buffer = false; }
+		})
+		availabilities[vertex] = buffer
+	})
+	return availabilities
 }
 
 shell = text => {
+	vertices_availabilities = get_vertices_availabilities()
 	args = text.split(' ')
 	if(args[0] === 'vertex') {
-		vertices[args[1]] = parseInt(args[2]) ?? 0
+		if(args[2]) { vertices[args[1]] = parseInt(args[2]) }
+		else { vertices[args[1]] = 0 }
 	} else if(args[0] === 'link') {
 		if(args.length == 2 + gates[args[1]][1] + gates[args[1]][2]) {
 			link(args[1], args.slice(2, 2 + gates[args[1]][1]), args.slice(2 + gates[args[1]][1]))
@@ -149,8 +173,6 @@ shell = text => {
 		const inouts = argstr.split(',')
 		const ins = trim_list(inouts[0].split(' '))
 		const outs = trim_list(inouts[1].split(' '))
-
-		// ins.forEach(inp => console.log(print_links(inp)))
 		
 		Gates[args[1]] = new Element(ins.length, outs.length, (inputs) => {
 			for(let i = 0; i < inputs.length; i++) {
@@ -164,14 +186,15 @@ shell = text => {
 			return ots
 		}, ins, outs)
 
-		gates[args[1]] = Gates[args[1]]
+		gates[args[1]] = [Gates[args[1]], ins.length, outs.length]
+	} else if(args[0] === 'vertices') {
+		Object.keys(vertices_availabilities).forEach(vertex_name => {
+			console.log('Vertex:', vertex_name)
+			console.log('Value:', vertices[vertex_name])
+			console.log('Available:', vertices_availabilities[vertex_name] ? 'Yes' : 'No')
+			console.log()
+		})
 	}
-}
-
-log = () => {
-	console.log(vertices)
-	console.log(links)
-	console.log(gates)
 }
 
 module.exports = {
