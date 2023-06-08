@@ -42,6 +42,8 @@ links = { }
 
 vertices_availabilities = { }
 
+hiddens = []
+
 check_vertex = (vertex) => {
 	if(!vertices.hasOwnProperty(vertex)) {
 		console.log('ERROR - vertex does not exist')
@@ -97,6 +99,16 @@ lst_to_values = (lst) => {
 	return values
 }
 
+upgate = (gate) => {
+	if(links[gate]) {
+		links[gate].forEach(link => {
+			if(link in vertices) {
+				update(link)
+			}
+		})
+	}
+}
+
 update = (vertex, value=-1) => {
 	if(value === -1) { value = vertices[vertex] }
 	value = parseInt(value)
@@ -105,6 +117,9 @@ update = (vertex, value=-1) => {
 		links[vertex].forEach(link => {
 			if(link in gates) {
 				vertices[links[link]] = gates[link][0].run(lst_to_values(get_back_linked_vertices(link)))
+				upgate(link)
+			} else if(link in vertices) {
+				update(link)
 			}
 		})
 	}
@@ -157,6 +172,9 @@ shell = text => {
 		else { vertices[args[1]] = 0 }
 	} else if(args[0] === 'link') {
 		if(args.length == 2 + gates[args[1]][1] + gates[args[1]][2]) {
+			buffer = args[1]
+			while(links[args[1]] && links[args[1]].length > 0) { args[1] += '_' }
+			gates[args[1]] = Object.assign({}, gates[buffer])
 			link(args[1], args.slice(2, 2 + gates[args[1]][1]), args.slice(2 + gates[args[1]][1]))
 		}
 	} else if(args[0] === 'update') {
@@ -183,20 +201,27 @@ shell = text => {
 			outs.forEach(out => {
 				ots.push(vertices[out])
 			})
-			return ots
+			return ots.length == 1 ? ots[0] : ots
 		}, ins, outs)
 
 		gates[args[1]] = [Gates[args[1]], ins.length, outs.length]
 	} else if(args[0] === 'vertices') {
 		Object.keys(vertices_availabilities).forEach(vertex_name => {
-			console.log('Vertex:', vertex_name)
-			console.log('Value:', vertices[vertex_name])
-			console.log('Available:', vertices_availabilities[vertex_name] ? 'Yes' : 'No')
-			console.log()
+			if(!_in(vertex_name, hiddens) && (vertices_availabilities[vertex_name] || args[2] == 'all')) {
+				console.log('Vertex:', vertex_name)
+				console.log('Value:', vertices[vertex_name])
+				console.log('Available:', vertices_availabilities[vertex_name] ? 'Yes' : 'No')
+				console.log()
+			}
+		})
+	} else if(args[0] === 'hide') {
+		Object.keys(vertices).forEach(vertex => {
+			if(vertex == args[1]) { hiddens.push(args[1]) }
 		})
 	}
 }
 
 module.exports = {
 	shell,
+	gates,
 }
