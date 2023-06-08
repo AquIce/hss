@@ -3,10 +3,8 @@ const { shell, gates } = require('../src/hss.js');
 // Create the NOT gate
 shell('vertex a 1')
 shell('vertex b')
-shell('vertex c')
 shell('link nand a a b')
 shell('assign not a, b')
-shell('hide c')
 
 // Create the AND gate
 shell('vertex aa 1')

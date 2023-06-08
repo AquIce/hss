@@ -207,10 +207,10 @@ shell = text => {
 		gates[args[1]] = [Gates[args[1]], ins.length, outs.length]
 	} else if(args[0] === 'vertices') {
 		Object.keys(vertices_availabilities).forEach(vertex_name => {
-			if(!_in(vertex_name, hiddens) && (vertices_availabilities[vertex_name] || args[2] == 'all')) {
+			if(!_in(vertex_name, hiddens) && (vertices_availabilities[vertex_name] || args[1] == 'all')) {
 				console.log('Vertex:', vertex_name)
 				console.log('Value:', vertices[vertex_name])
-				console.log('Available:', vertices_availabilities[vertex_name] ? 'Yes' : 'No')
+				if(args[1] == 'all') { console.log('Available:', vertices_availabilities[vertex_name] ? 'Yes' : 'No') }
 				console.log()
 			}
 		})
