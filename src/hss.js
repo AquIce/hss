@@ -5,20 +5,22 @@ class Element {
 		
 	operation
 
+	ins
+	outs
+
 	inputs = []
 	outputs = []
 
-	constructor(input_number, output_number, operation) {
+	constructor(input_number, output_number, operation, ins=undefined, outs=undefined) {
 		this.input_number = input_number
 		this.output_number = output_number
 		this.operation = operation
+		this.ins = ins
+		this.outs = outs
 	}
 	
 	run(inputs) {
-		if(typeof this.operation === 'function') {
-			this.outputs = this.operation(inputs)
-		}
-		else {  }
+		this.outputs = this.operation(inputs)
 		return this.outputs
 	}
 }
@@ -106,6 +108,25 @@ update = (vertex, value=-1) => {
 	}
 }
 
+trim_list = (list) => {
+	let lst = []
+	for (let i = 0; i < list.length; i++) {
+		if(list[i]) { lst.push(list[i]) }
+	}
+	return lst
+}
+
+print_links = (element) => {
+	plinks = []
+	if(links[element]) {
+		links[element].forEach(link => {
+			plinks.push([element, link])
+			plinks = plinks.concat(print_links(link))
+		})
+	}
+	return plinks
+}
+
 shell = text => {
 	args = text.split(' ')
 	if(args[0] === 'vertex') {
@@ -124,28 +145,33 @@ shell = text => {
 	} else if(args[0] === 'log') {
 		log()
 	} else if(args[0] == 'assign') {
-		argstr = args.slice(2).join(' ')
-		inouts = argstr.split(',')
-		ins = inouts[0].split(' ')
-		outs = inouts[1].split(' ')
-		console.log(ins)
-		console.log(outs)
-		Gates[args[1]] = new Element(inputs.length, outputs.length, (inputs) => {
+		const argstr = args.slice(2).join(' ')
+		const inouts = argstr.split(',')
+		const ins = trim_list(inouts[0].split(' '))
+		const outs = trim_list(inouts[1].split(' '))
 
-		})
+		// ins.forEach(inp => console.log(print_links(inp)))
+		
+		Gates[args[1]] = new Element(ins.length, outs.length, (inputs) => {
+			for(let i = 0; i < inputs.length; i++) {
+				vertices[ins[i]] = inputs[i]
+			}
+			update(ins[0])
+			ots = []
+			outs.forEach(out => {
+				ots.push(vertices[out])
+			})
+			return ots
+		}, ins, outs)
+
+		gates[args[1]] = Gates[args[1]]
 	}
-	
-/* Gates = {
-	nand: new Element(2, 1, (inputs) => {
-		if(inputs[0] && inputs[1]) { return 0; }
-		return 1;
-	}),
-} */
 }
 
 log = () => {
 	console.log(vertices)
 	console.log(links)
+	console.log(gates)
 }
 
 module.exports = {
