@@ -220,6 +220,34 @@ Value: 0
 Available: Yes
 ```
 
+### hide
+
+#### Syntax
+```
+hide <vertex>
+```
+
+Hides `<vertex>` from `vertices` and `vertices all`
+
+#### Example
+```
+vertex a 1
+vertex b
+hide a
+vertices
+```
+Creates `a` with the value `1`.
+Creates `b` with the value `0`.
+Hides `a`.
+Outputs vertices informations.
+
+#### Output
+
+```
+Vertex: b
+Value: 0
+```
+
 [GitHub Repo]: https://github.com/SinisterIcy/hss
 [ZIP File]: https://github.com/SinisterIcy/hss/archive/refs/heads/main.zip
 [vertex]: #vertex

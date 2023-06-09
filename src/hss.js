@@ -35,7 +35,7 @@ Gates = {
 vertices = { }
 
 gates = {
-	'nand': [Gates.nand, 2, 1]
+	'nand': [Gates.nand, 2, 1, false]
 }
 
 links = { }
@@ -75,6 +75,29 @@ link = (gate, inputs, outputs) => {
 		auto_create_links_lst(gate)
 		links[gate].push(output)
 	})
+}
+
+get_back_links = (element) => {
+	backlinks = []
+	Object.keys(vertices).forEach(vertex => {
+		if(links[vertex]) {
+			links[vertex].forEach(link => {
+				if(link === element) {
+					backlinks.push(vertex)
+				}
+			})
+		}
+	})
+	Object.keys(gates).forEach(gate => {
+		if(links[gate]) {
+			links[gate].forEach(link => {
+				if(link === element) {
+					backlinks.push(gate)
+				}
+			})
+		}
+	})
+	return backlinks
 }
 
 get_back_linked_vertices = (element) => {
@@ -152,16 +175,73 @@ vertex_in_gate = (vertex, gate) => {
 	return _in(vertex, gate.ins) || _in(vertex, gate.outs)
 }
 
+remove_redundances = (list) => {
+	let final = []
+	if(list) {
+		list.forEach(element => {
+			if(!_in(element, final)) { final.push(element) }
+		})
+	}
+	return final
+}
+
+back_availability = (element) => {
+	backlinks = remove_redundances(get_back_links(element))
+	if(backlinks) {
+		backlinks.forEach(backlink => {
+			if(vertices.hasOwnProperty(backlink)) {
+				availabilities[backlink] = false
+				back_availability(backlink)
+			}
+		})
+	}
+}
+
+forward_availability = (element) => {
+	lnks = remove_redundances(links[element])
+	if(lnks) {
+		lnks.forEach(lnk => {
+			if(vertices.hasOwnProperty(lnk)) {
+				availabilities[lnk] = false
+				forward_availability(lnk)
+			}
+		})
+	}
+}
+
+get_availabilities = (gate) => {
+	back_availability(gate)
+	forward_availability(gate)
+}
+
 get_vertices_availabilities = () => {
 	availabilities = {};
 	Object.keys(vertices).forEach(vertex => {
+		availabilities[vertex] = true
+	})
+	Object.keys(gates).forEach(gate => {
+		if(gates[gate][3])
+			get_availabilities(gate)
+	})
+	/* Object.keys(vertices).forEach(vertex => {
 		buffer = true
 		Object.keys(gates).forEach(gate => {
 			if(vertex_in_gate(vertex, gates[gate][0])) { buffer = false; }
 		})
 		availabilities[vertex] = buffer
-	})
+	}) */
 	return availabilities
+}
+
+set_involved_gates_usestate = (element) => {
+	if(links[element]) {
+		links[element].forEach(link => {
+			if(gates[link]) {
+				gates[link][3] = true
+			}
+			set_involved_gates_usestate(link)
+		})
+	}
 }
 
 shell = text => {
@@ -204,7 +284,8 @@ shell = text => {
 			return ots.length == 1 ? ots[0] : ots
 		}, ins, outs)
 
-		gates[args[1]] = [Gates[args[1]], ins.length, outs.length]
+		gates[args[1]] = [Gates[args[1]], ins.length, outs.length, false]
+		ins.forEach(set_involved_gates_usestate)
 	} else if(args[0] === 'vertices') {
 		Object.keys(vertices_availabilities).forEach(vertex_name => {
 			if(!_in(vertex_name, hiddens) && (vertices_availabilities[vertex_name] || args[1] == 'all')) {

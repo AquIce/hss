@@ -14,7 +14,6 @@ shell('vertex dd')
 shell('link nand aa bb cc')
 shell('link not cc dd')
 shell('assign and aa bb, dd')
-shell('hide cc')
 
 // Test the AND gate
 shell('vertex aaa 1')
