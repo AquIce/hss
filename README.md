@@ -24,9 +24,9 @@
 - [link]
 - [update]
 - [eval]
-- [log] (WIP)
-- [assign] (WIP)
-- [vertices] (WIP)
+- [log]
+- [assign]
+- [vertices]
 
 ### vertex
 
@@ -59,7 +59,7 @@ vertex a
 vertex b
 link a b
 ```
-Creates `a` and `b`, and then links them together
+Creates `a` and `b`, and then links them together.
 
 ### update
 
@@ -68,7 +68,7 @@ Creates `a` and `b`, and then links them together
 update <vertex> [value]
 ```
 
-Updates `vertex` and spread `value` (or its value if not specified)
+Updates `vertex` and spread `value` (or its value if not specified).
 
 #### Example
 ```
@@ -78,7 +78,7 @@ link a b
 update a 1
 ```
 Creates `a` and `b`, links them together, and then spreads `1` from `a`.
-After that, `b` will also be `1`
+After that, `b` will also be `1`.
 
 ### eval
 
@@ -87,7 +87,7 @@ After that, `b` will also be `1`
 eval <vertex>
 ```
 
-Prints the value of the vertex
+Prints the value of the vertex.
 
 #### Example
 ```
@@ -95,7 +95,130 @@ vertex a
 eval a
 ```
 Creates `a` with the value `1`.
-Prints `a`'s value (`1`)
+Prints `a`'s value (`1`).
+
+#### Ouptut
+
+```
+[a] 0
+```
+
+### log
+
+#### Syntax
+```
+log
+```
+
+Logs debug informations.
+
+#### Example
+```
+vertex a
+vertex b 1
+log
+```
+Creates `a` with the value `0`.
+Creates `b` with the value `0`.
+Prints debug informations.
+
+#### Output
+
+```js
+{ a: 0, b: 1 }
+{}
+{
+  nand: [
+    Element {
+      input_number: 2,
+      output_number: 1,
+      operation: [Function (anonymous)],
+      ins: undefined,
+      outs: undefined,
+      inputs: [],
+      outputs: []
+    },
+    2,
+    1
+  ]
+}
+{ a: true, b: true }
+```
+
+### assign
+
+#### Syntax
+```
+assign <gate_name> <...inputs>, <...outputs>
+```
+
+Creates a new gate with the logic between the `<...inputs>` and `<...outputs>`.
+
+#### Example
+```
+vertex a 1
+vertex b
+link nand a a b
+assign not a, b
+```
+Creates `a` with the value `1`.
+Creates `b` with the value `0`.
+Creates links `a` and `b` with the NAND gate.
+Creates the new gate `nand` with the logic between `a` and `b`.
+
+```mermaid
+flowchart TD
+    A[a] --> C{gate NAND};
+    B[a] --> C{NAND};
+    C{NAND} --> D[b];
+```
+| `a` | `b` |
+|-|-|
+| 0 | 1 |
+| 1 | 0 |
+
+### vertices
+
+#### Syntax
+```
+vertices [all]
+```
+
+Outputs vertices informations.
+If the `all` flag is not precised, it will only show availiable vertices
+
+#### Example
+```
+vertex a 1
+vertex b
+link nand a a b
+assign not a, b
+vertex c
+vertices
+vertices all
+```
+Creates `a` with the value `1`.
+Creates `b` with the value `0`.
+Creates links `a` and `b` with the NAND gate.
+
+#### Output
+
+```
+Vertex: c
+Value: 0
+
+Vertex: a
+Value: 1
+Available: No
+
+Vertex: b
+Value: 0
+Available: No
+
+Vertex: c
+Value: 0
+Available: Yes
+```
 
 [GitHub Repo]: https://github.com/SinisterIcy/hss
 [ZIP File]: https://github.com/SinisterIcy/hss/archive/refs/heads/main.zip
