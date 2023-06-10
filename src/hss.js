@@ -304,5 +304,4 @@ shell = text => {
 
 module.exports = {
 	shell,
-	gates,
 }
