@@ -240,35 +240,30 @@ set_involved_gates_usestate = (element) => {
 }
 
 get_fres_node = (inp) => {
-	let fres_ = ''
+	let fres_ = {}
 	if(links[inp]) {
 		links[inp].forEach(link => {
-			if(gates[link]) {
-				let buffer = ''
-				get_back_linked_vertices(link).forEach(backlink => {
-					buffer += backlink + ' '
-				})
-				let bufferPrime = ''
-				links[link].forEach(lnk => {
-					bufferPrime += lnk + ' '
-				})
-				fres_ += 'link ' + link + ' '  + buffer.slice(0, buffer.length - 3) + ', ' + bufferPrime.slice(0, bufferPrime.length - 1) + '\n'
-			} else if(vertices[link]) {
-				fres_ += 'link ' + link + ' ' + inp + '\n'
+			if(!_in(link, Object.keys(fres_))) {
+				fres_[link] = 1
+			} else {
+				fres_[link]++
 			}
-			fres_ += get_fres_node(link)
 		})
 	}
 	return fres_
 }
 
 get_fres = (ins) => {
-	let fres = ''
+	let fres = {}
 	ins.forEach(inp => {
-		fres += 'vertex ' + inp + '\n'
-	})
-	ins.forEach(inp => {
-		fres += get_fres_node(inp)
+		fres[inp] = get_fres_node(inp)
+		if(links[inp]) {
+			links[inp].forEach(link => {
+				if(!_in(link, Object.keys(fres))) {
+					fres[link] = get_fres_node(link)
+				}
+			})
+		}
 	})
 	return fres
 }
