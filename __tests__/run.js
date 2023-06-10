@@ -1,4 +1,4 @@
-const { shell, gates } = require('../src/hss.js');
+const { shell } = require('../src/hss.js');
 
 // Create the NOT gate
 shell('vertex a 1')
