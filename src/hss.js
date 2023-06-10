@@ -1,3 +1,5 @@
+const fs = require('fs')
+
 class Element {
 	
 	input_number
@@ -223,13 +225,6 @@ get_vertices_availabilities = () => {
 		if(gates[gate][3])
 			get_availabilities(gate)
 	})
-	/* Object.keys(vertices).forEach(vertex => {
-		buffer = true
-		Object.keys(gates).forEach(gate => {
-			if(vertex_in_gate(vertex, gates[gate][0])) { buffer = false; }
-		})
-		availabilities[vertex] = buffer
-	}) */
 	return availabilities
 }
 
@@ -242,6 +237,40 @@ set_involved_gates_usestate = (element) => {
 			set_involved_gates_usestate(link)
 		})
 	}
+}
+
+get_fres_node = (inp) => {
+	let fres_ = ''
+	if(links[inp]) {
+		links[inp].forEach(link => {
+			if(gates[link]) {
+				let buffer = ''
+				get_back_linked_vertices(link).forEach(backlink => {
+					buffer += backlink + ' '
+				})
+				let bufferPrime = ''
+				links[link].forEach(lnk => {
+					bufferPrime += lnk + ' '
+				})
+				fres_ += 'link ' + link + ' '  + buffer.slice(0, buffer.length - 3) + ', ' + bufferPrime.slice(0, bufferPrime.length - 1) + '\n'
+			} else if(vertices[link]) {
+				fres_ += 'link ' + link + ' ' + inp + '\n'
+			}
+			fres_ += get_fres_node(link)
+		})
+	}
+	return fres_
+}
+
+get_fres = (ins) => {
+	let fres = ''
+	ins.forEach(inp => {
+		fres += 'vertex ' + inp + '\n'
+	})
+	ins.forEach(inp => {
+		fres += get_fres_node(inp)
+	})
+	return fres
 }
 
 shell = text => {
@@ -283,6 +312,10 @@ shell = text => {
 			})
 			return ots.length == 1 ? ots[0] : ots
 		}, ins, outs)
+
+		// Add in file
+		let fres = get_fres(ins)
+		console.log(fres)
 
 		gates[args[1]] = [Gates[args[1]], ins.length, outs.length, false]
 		ins.forEach(set_involved_gates_usestate)
