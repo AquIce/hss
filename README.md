@@ -8,18 +8,33 @@
     git clone https://github.com/SinisterIcy/hss
     ```
 2. Then, copy the `hss.js` file to your **project directory**.
-3. Import the `shell` function from the `hss.js` file:
+3. From here, you need to choose whether you want to exectute commands from a [file] or using a [JS function].
+
+### File
+
+1. Create the file `myFile.hss`
+2. Import the `loadFile` function from the `hss.js` file:
+    ```js
+    const { loadFile } = require('hss.js')
+    ```
+3. Use the `loadFile()` function to execute your file
+    ```js
+    loadFile('myFile.hss')
+    ```
+### JS Function
+
+1. Import the `shell` function from the `hss.js` file:
     ```js
     const { shell } = require('hss.js')
     ```
-4. Finally, just execute your command by using `shell('<command>')`
-    ```js
-    shell('log')
-    ```
+2. Execute your command by using `shell('<command>')`
+```js
+shell('log')
+```
 
 ## Commands
 
-**hss** has an integrated shell able to run a variety of commands such as:
+**hss** is able to run a variety of commands such as:
 - [vertex]
 - [link]
 - [update]
@@ -250,6 +265,8 @@ Value: 0
 
 [GitHub Repo]: https://github.com/SinisterIcy/hss
 [ZIP File]: https://github.com/SinisterIcy/hss/archive/refs/heads/main.zip
+[file]: #file
+[JS function]: #js-function
 [vertex]: #vertex
 [link]: #link
 [update]: #update
