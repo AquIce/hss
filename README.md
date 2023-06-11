@@ -42,6 +42,7 @@ shell('log')
 - [log]
 - [assign]
 - [vertices]
+- [hide]
 
 ### vertex
 
@@ -51,6 +52,7 @@ vertex <name> [value]
 ```
 
 Creates a new vertex called `name` with the value `value`.
+
 If a `value` is not specified, it will use `0` instead.
 
 #### Example
@@ -93,6 +95,7 @@ link a b
 update a 1
 ```
 Creates `a` and `b`, links them together, and then spreads `1` from `a`.
+
 After that, `b` will also be `1`.
 
 ### eval
@@ -110,6 +113,7 @@ vertex a
 eval a
 ```
 Creates `a` with the value `1`.
+
 Prints `a`'s value (`1`).
 
 #### Ouptut
@@ -134,7 +138,9 @@ vertex b 1
 log
 ```
 Creates `a` with the value `0`.
+
 Creates `b` with the value `0`.
+
 Prints debug informations.
 
 #### Output
@@ -177,9 +183,12 @@ link nand a a b
 assign not a, b
 ```
 Creates `a` with the value `1`.
+
 Creates `b` with the value `0`.
+
 Creates links `a` and `b` with the NAND gate.
-Creates the new gate `nand` with the logic between `a` and `b`.
+
+Creates the new gate `not` with the logic between `a` and `b`.
 
 ```mermaid
 flowchart TD
@@ -200,6 +209,7 @@ vertices [all]
 ```
 
 Outputs vertices informations.
+
 If the `all` flag is not precised, it will only show availiable vertices
 
 #### Example
@@ -213,8 +223,14 @@ vertices
 vertices all
 ```
 Creates `a` with the value `1`.
+
 Creates `b` with the value `0`.
+
 Creates links `a` and `b` with the NAND gate.
+
+Outputs availaible vertices.
+
+Outputs all vertices.
 
 #### Output
 
@@ -252,8 +268,11 @@ hide a
 vertices
 ```
 Creates `a` with the value `1`.
+
 Creates `b` with the value `0`.
+
 Hides `a`.
+
 Outputs vertices informations.
 
 #### Output
@@ -274,3 +293,4 @@ Value: 0
 [log]: #log
 [assign]: #assign
 [vertices]: #vertices
+[hide]: #hide
