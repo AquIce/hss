@@ -344,6 +344,19 @@ shell = text => {
 	}
 }
 
+fileLoad = (file) => {
+	let fileName = path.join(__dirname, file)
+	let data = fs.readFileSync(fileName, 'utf8')
+	let lines = data.split('\n')
+	lines.forEach(line => {
+		let ln = line.trim()
+		if(ln && !ln.startsWith('/')) {
+			shell(ln)
+		}
+	})
+}
+
 module.exports = {
 	shell,
+	fileLoad,
 }
