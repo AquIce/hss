@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 
 class Element {
 	
@@ -257,12 +258,16 @@ get_fres = (ins) => {
 	let fres = {}
 	ins.forEach(inp => {
 		fres[inp] = get_fres_node(inp)
-		if(links[inp]) {
-			links[inp].forEach(link => {
-				if(!_in(link, Object.keys(fres))) {
-					fres[link] = get_fres_node(link)
-				}
-			})
+		let buffer = inp
+		while(links[buffer] && links[buffer].length != 0) {
+			if(links[buffer]) {
+				links[buffer].forEach(link => {
+					if(!_in(link, Object.keys(fres))) {
+						fres[link] = get_fres_node(link)
+					}
+					buffer = link
+				})
+			}
 		}
 	})
 	return fres
@@ -309,8 +314,17 @@ shell = text => {
 		}, ins, outs)
 
 		// Add in file
-		let fres = get_fres(ins)
-		console.log(fres)
+		let datas = JSON.stringify(get_fres(ins), null, 4)
+		let folderName = path.join(__dirname, 'components')
+		if (!fs.existsSync(folderName)) {
+			fs.mkdirSync(folderName);
+		}
+		let fname = folderName + '/' + args[1].toUpperCase() + '.json'
+
+		if(!fs.existsSync(fname)) {
+			fs.appendFileSync(fname, '{}')
+		}
+		fs.writeFileSync(fname, datas)
 
 		gates[args[1]] = [Gates[args[1]], ins.length, outs.length, false]
 		ins.forEach(set_involved_gates_usestate)
