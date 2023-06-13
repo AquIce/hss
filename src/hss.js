@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 
-let test_buffer = []
-let infinite_loop = false
+var test_buffer = []
+var infinite_loop = false
 
 class Element {
 	
@@ -31,44 +31,44 @@ class Element {
 	}
 }
 
-Gates = {
+var Gates = {
 	nand: new Element(2, 1, (inputs) => {
 		if(inputs[0] && inputs[1]) { return 0; }
 		return 1;
 	}),
 }
 
-vertices = { }
+var vertices = { }
 
-gates = {
+var gates = {
 	'nand': [Gates.nand, 2, 1, false]
 }
 
-links = { }
+var links = { }
 
-vertices_availabilities = { }
+var hiddens = []
 
-hiddens = []
+var availabilities = { }
 
-check_vertex = (vertex) => {
+const check_vertex = (vertex) => {
 	if(!vertices.hasOwnProperty(vertex)) {
 		console.log('ERROR - vertex does not exist')
 	}
 }
 
-check_gate = (gate) => {
+const check_gate = (gate) => {
 	if(!gates.hasOwnProperty(gate)) {
 		console.log('ERROR - gate does not exist')
 	}
 }
 
-auto_create_links_lst = (obj) => {
+const auto_create_links_lst = (obj) => {
 	if(!links[obj]) {
 		links[obj] = []
 	}
 }
 
-link = (gate, inputs, outputs) => {
+const link = (gate, inputs, outputs) => {
 	inputs.forEach(input => {
 		check_vertex(input)
 		check_gate(gate)
@@ -83,8 +83,8 @@ link = (gate, inputs, outputs) => {
 	})
 }
 
-get_back_links = (element) => {
-	backlinks = []
+const get_back_links = (element) => {
+	let backlinks = []
 	Object.keys(vertices).forEach(vertex => {
 		if(links[vertex]) {
 			links[vertex].forEach(link => {
@@ -106,8 +106,8 @@ get_back_links = (element) => {
 	return backlinks
 }
 
-get_back_linked_vertices = (element) => {
-	backlinks = []
+const get_back_linked_vertices = (element) => {
+	let backlinks = []
 	Object.keys(vertices).forEach(vertex => {
 		if(links[vertex]) {
 			links[vertex].forEach(link => {
@@ -120,15 +120,15 @@ get_back_linked_vertices = (element) => {
 	return backlinks
 }
 
-lst_to_values = (lst) => {
-	values = []
+const lst_to_values = (lst) => {
+	let values = []
 	lst.forEach(element => {
 		values.push(vertices[element])
 	})
 	return values
 }
 
-upgate = (gate) => {
+const upgate = (gate) => {
 	if(links[gate]) {
 		links[gate].forEach(link => {
 			if(link in vertices) {
@@ -138,7 +138,7 @@ upgate = (gate) => {
 	}
 }
 
-fragment = (link_list) => {
+const fragment = (link_list) => {
 	let lst = []
 	link_list.forEach(link => {
 		if(link instanceof Array) { lst = lst.concat(link) }
@@ -148,11 +148,11 @@ fragment = (link_list) => {
 }
 
 
-isDoubleList = (list) => {
+const isDoubleList = (list) => {
 	return list.length % 2 !== 0 ? false : JSON.stringify(list.slice(0, list.length / 2)) == JSON.stringify(list.slice(list.length / 2))
 }
 
-get_all_material_links = (element, user_called=true) => {
+const get_all_material_links = (element, user_called=true) => {
 	if(infinite_loop) { return }
 	let lst = []
 	if(links[element]) {
@@ -167,7 +167,7 @@ get_all_material_links = (element, user_called=true) => {
 	return remove_redundances(lst)
 }
 
-update = (vertex, value=-1) => {
+const update = (vertex, value=-1) => {
 	if(value === -1) { value = vertices[vertex] }
 	value = parseInt(value)
 	vertices[vertex] = value
@@ -186,14 +186,14 @@ update = (vertex, value=-1) => {
 	}
 }
 
-log = () => {
+const log = () => {
 	console.log(vertices)
 	console.log(links)
 	console.log(gates)
-	console.log(vertices_availabilities)
+	console.log(availabilities)
 }
 
-trim_list = (list) => {
+const trim_list = (list) => {
 	let lst = []
 	for (let i = 0; i < list.length; i++) {
 		if(list[i]) { lst.push(list[i]) }
@@ -201,19 +201,19 @@ trim_list = (list) => {
 	return lst
 }
 
-_in = (element, list) => {
+const _in = (element, list) => {
 	for(el of list) {
 		if(JSON.stringify(el) === JSON.stringify(element)) { return true }
 	}
 	return false
 }
 
-vertex_in_gate = (vertex, gate) => {
+const vertex_in_gate = (vertex, gate) => {
 	if(!gate.ins || !gate.outs) { return false }
 	return _in(vertex, gate.ins) || _in(vertex, gate.outs)
 }
 
-remove_redundances = (list) => {
+const remove_redundances = (list) => {
 	let final = []
 	if(list) {
 		list.forEach(element => {
@@ -223,8 +223,8 @@ remove_redundances = (list) => {
 	return final
 }
 
-back_availability = (element) => {
-	backlinks = remove_redundances(get_back_links(element))
+const back_availability = (element) => {
+	let backlinks = remove_redundances(get_back_links(element))
 	if(backlinks) {
 		backlinks.forEach(backlink => {
 			if(vertices.hasOwnProperty(backlink)) {
@@ -235,8 +235,8 @@ back_availability = (element) => {
 	}
 }
 
-forward_availability = (element) => {
-	lnks = remove_redundances(links[element])
+const forward_availability = (element) => {
+	let lnks = remove_redundances(links[element])
 	if(lnks) {
 		lnks.forEach(lnk => {
 			if(vertices.hasOwnProperty(lnk)) {
@@ -247,13 +247,12 @@ forward_availability = (element) => {
 	}
 }
 
-get_availabilities = (gate) => {
+const get_availabilities = (gate) => {
 	back_availability(gate)
 	forward_availability(gate)
 }
 
-get_vertices_availabilities = () => {
-	availabilities = {};
+const get_vertices_availabilities = () => {
 	Object.keys(vertices).forEach(vertex => {
 		availabilities[vertex] = true
 	})
@@ -264,7 +263,7 @@ get_vertices_availabilities = () => {
 	return availabilities
 }
 
-set_involved_gates_usestate = (element) => {
+const set_involved_gates_usestate = (element) => {
 	if(links[element]) {
 		links[element].forEach(link => {
 			if(gates[link]) {
@@ -275,7 +274,7 @@ set_involved_gates_usestate = (element) => {
 	}
 }
 
-get_fres_node = (inp) => {
+const get_fres_node = (inp) => {
 	let fres_ = {}
 	if(links[inp]) {
 		links[inp].forEach(link => {
@@ -289,7 +288,7 @@ get_fres_node = (inp) => {
 	return fres_
 }
 
-get_fres = (ins) => {
+const get_fres = (ins) => {
 	let fres = {}
 	ins.forEach(inp => {
 		fres[inp] = get_fres_node(inp)
@@ -308,8 +307,8 @@ get_fres = (ins) => {
 	return fres
 }
 
-shell = text => {
-	vertices_availabilities = get_vertices_availabilities()
+const shell = (text) => {
+	get_vertices_availabilities()
 	args = text.split(' ')
 	if(args[0] === 'vertex') {
 		if(args[2]) { vertices[args[1]] = parseInt(args[2]) }
@@ -348,7 +347,6 @@ shell = text => {
 			return ots.length == 1 ? ots[0] : ots
 		}, ins, outs)
 
-		// Add in file
 		let datas = JSON.stringify(get_fres(ins), null, 4)
 		let folderName = path.join(__dirname, 'components')
 		if (!fs.existsSync(folderName)) {
@@ -364,11 +362,11 @@ shell = text => {
 		gates[args[1]] = [Gates[args[1]], ins.length, outs.length, false]
 		ins.forEach(set_involved_gates_usestate)
 	} else if(args[0] === 'vertices') {
-		Object.keys(vertices_availabilities).forEach(vertex_name => {
-			if(!_in(vertex_name, hiddens) && (vertices_availabilities[vertex_name] || args[1] == 'all')) {
+		Object.keys(availabilities).forEach(vertex_name => {
+			if(!_in(vertex_name, hiddens) && (availabilities[vertex_name] || args[1] == 'all')) {
 				console.log('Vertex:', vertex_name)
 				console.log('Value:', vertices[vertex_name])
-				if(args[1] == 'all') { console.log('Available:', vertices_availabilities[vertex_name] ? 'Yes' : 'No') }
+				if(args[1] == 'all') { console.log('Available:', availabilities[vertex_name] ? 'Yes' : 'No') }
 				console.log()
 			}
 		})
@@ -379,7 +377,7 @@ shell = text => {
 	}
 }
 
-fileLoad = (file) => {
+const fileLoad = (file) => {
 	let fileName = path.join(__dirname, file)
 	let data = fs.readFileSync(fileName, 'utf8')
 	let lines = data.split('\n')
