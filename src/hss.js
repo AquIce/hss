@@ -1,6 +1,9 @@
 const fs = require('fs')
 const path = require('path')
 
+let test_buffer = []
+let infinite_loop = false
+
 class Element {
 	
 	input_number
@@ -135,19 +138,51 @@ upgate = (gate) => {
 	}
 }
 
+fragment = (link_list) => {
+	let lst = []
+	link_list.forEach(link => {
+		if(link instanceof Array) { lst = lst.concat(link) }
+		else { lst.push(link) }
+	})
+	return lst
+}
+
+
+isDoubleList = (list) => {
+	return list.length % 2 !== 0 ? false : JSON.stringify(list.slice(0, list.length / 2)) == JSON.stringify(list.slice(list.length / 2))
+}
+
+get_all_material_links = (element, user_called=true) => {
+	if(infinite_loop) { return }
+	let lst = []
+	if(links[element]) {
+		links[element].forEach(link => {
+			lst.push(link)
+			test_buffer.push(link)
+			if(isDoubleList(test_buffer)) { infinite_loop = true; return lst }
+			lst = lst.concat(get_all_material_links(link, false))
+		})
+	}
+	if(user_called) { return fragment(remove_redundances(lst)) }
+	return remove_redundances(lst)
+}
+
 update = (vertex, value=-1) => {
 	if(value === -1) { value = vertices[vertex] }
 	value = parseInt(value)
 	vertices[vertex] = value
-	if(links[vertex]) {
-		links[vertex].forEach(link => {
-			if(link in gates) {
-				vertices[links[link]] = gates[link][0].run(lst_to_values(get_back_linked_vertices(link)))
-				upgate(link)
-			} else if(link in vertices) {
-				update(link)
-			}
-		})
+	let buffer = vertex
+	while(true) {
+		if(links[buffer] && links[buffer].length != 0) {
+			links[buffer].forEach(link => {
+				if(link in gates) {
+					vertices[links[link]] = gates[link][0].run(lst_to_values(get_back_linked_vertices(link)))
+					upgate(link)
+				} else if(link in vertices) {
+					update(link)
+				}
+			})
+		}
 	}
 }
 
@@ -359,4 +394,5 @@ fileLoad = (file) => {
 module.exports = {
 	shell,
 	fileLoad,
+	get_all_material_links
 }

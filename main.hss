@@ -8,16 +8,6 @@ assign not a, b
 vertex aa 1
 vertex bb 1
 vertex cc
-vertex dd
-link nand aa bb cc
-link not cc dd
-assign and aa bb, dd
-
-/ Test the AND gate
-vertex aaa 1
-vertex bbb 1
-vertex ccc
-link and aaa bbb ccc
-update aaa
-
-vertices
+link not aa bb
+link not bb cc
+link not cc aa
