@@ -208,11 +208,6 @@ const _in = (element, list) => {
 	return false
 }
 
-const vertex_in_gate = (vertex, gate) => {
-	if(!gate.ins || !gate.outs) { return false }
-	return _in(vertex, gate.ins) || _in(vertex, gate.outs)
-}
-
 const remove_redundances = (list) => {
 	let final = []
 	if(list) {
