@@ -5,7 +5,7 @@
 
 1. First, you need to clone the [GitHub Repo] or to download the [ZIP File].
     ```sh
-    git clone https://github.com/SinisterIcy/hss
+    git clone https://github.com/AquIce/hss
     ```
 2. Then, copy the `hss.js` file to your **project directory**.
 3. From here, you need to choose whether you want to exectute commands from a [file] or using a [JS function].
@@ -282,8 +282,8 @@ Vertex: b
 Value: 0
 ```
 
-[GitHub Repo]: https://github.com/SinisterIcy/hss
-[ZIP File]: https://github.com/SinisterIcy/hss/archive/refs/heads/main.zip
+[GitHub Repo]: https://github.com/AquIce/hss
+[ZIP File]: https://github.com/AquIce/hss/archive/refs/heads/main.zip
 [file]: #file
 [JS function]: #js-function
 [vertex]: #vertex
